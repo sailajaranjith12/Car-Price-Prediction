@@ -3,12 +3,12 @@ import pandas as pd
 import joblib
 import numpy as np
 
-# Load the trained model
-model = joblib.load("linear_regression_model.pkl")
+# Load dataset from GitHub
+url = "https://raw.githubusercontent.com/sailajaranjith12/Car-Price-Prediction/refs/heads/main/Dataset/cleaned_car_data.csv"
+df = pd.read_csv(url)
 
-# Load dataset to verify features
-df = pd.read_csv("dataset/cleaned_car_data.csv")
-feature_columns = df.drop(columns=['selling_price']).columns.tolist()
+# Load trained model
+model = joblib.load("models/linear_regression_model.pkl")
 
 st.title("🚗 Car Price Prediction App")
 st.markdown("### Predict the selling price of a used car based on its features.")
@@ -30,27 +30,24 @@ owner = st.selectbox("Owner Type", ["First Owner", "Second Owner", "Third Owner"
 # Convert categorical inputs to match model encoding
 fuel_diesel = 1 if fuel_type == "Diesel" else 0
 fuel_lpg = 1 if fuel_type == "LPG" else 0
-fuel_petrol = 1 if fuel_type == "Petrol" else 0  # 🔹 Fixed: Added missing fuel_Petrol
-
+fuel_petrol = 1 if fuel_type == "Petrol" else 0
 seller_individual = 1 if seller_type == "Individual" else 0
-seller_trustmark = 1 if seller_type == "Trustmark Dealer" else 0  # 🔹 Fixed: Added missing seller_type_Trustmark Dealer
-
+seller_trustmark = 1 if seller_type == "Trustmark Dealer" else 0
 trans_manual = 1 if transmission == "Manual" else 0
-
 owner_second = 1 if owner == "Second Owner" else 0
 owner_third = 1 if owner == "Third Owner" else 0
 owner_fourth = 1 if owner == "Fourth & Above Owner" else 0
 owner_test_drive = 1 if owner == "Test Drive Car" else 0
 
-# Create a feature array with all 16 expected features
+# Create a feature array
 input_data = np.array([[year, km_driven, mileage, engine, max_power, seats,
-                        fuel_diesel, fuel_lpg, fuel_petrol,  # 🔹 Added missing fuel_Petrol
-                        seller_individual, seller_trustmark,  # 🔹 Added missing seller_type_Trustmark Dealer
+                        fuel_diesel, fuel_lpg, fuel_petrol,
+                        seller_individual, seller_trustmark,
                         trans_manual, owner_fourth, owner_second, owner_test_drive, owner_third]])
 
 # Ensure feature count matches trained model
-if len(input_data[0]) != len(feature_columns):
-    st.error(f"Feature mismatch! Model expects {len(feature_columns)} features, but received {len(input_data[0])}.")
+if len(input_data[0]) != len(df.drop(columns=['selling_price']).columns):
+    st.error(f"Feature mismatch! Model expects {len(df.drop(columns=['selling_price']).columns)} features, but received {len(input_data[0])}.")
     st.stop()
 
 # Predict price
