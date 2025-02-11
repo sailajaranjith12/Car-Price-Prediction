@@ -8,7 +8,7 @@ url = "https://raw.githubusercontent.com/sailajaranjith12/Car-Price-Prediction/r
 df = pd.read_csv(url)
 
 # Load trained model
-model = joblib.load("models/linear_regression_model.pkl")
+model = joblib.load("linear_regression_model.pkl")
 
 st.title("🚗 Car Price Prediction App")
 st.markdown("### Predict the selling price of a used car based on its features.")
